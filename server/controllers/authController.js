@@ -20,6 +20,7 @@ module.exports = {
     };
     return res.status(201).send(req.session.user);
   },
+
   login: async (req, res) => {
     const { username, password } = req.body;
     const foundUser = await req.app.get('db').get_user([username]);
@@ -31,7 +32,7 @@ module.exports = {
           'User  not found. Please register as a new user before logging in.'
         );
     }
-    const isAuthenticated = bcrypt.compareSync(password, user.hash);
+    const isAuthenticated = bcrypt.compare(password, user.hash);
     if (!isAuthenticated) {
       return res.status(403).send('Incorrect password');
     }
@@ -41,5 +42,9 @@ module.exports = {
       username: user.username
     };
     return res.send(req.session.user);
+  },
+  logout: (req, res) => {
+    req.session.destroy();
+    return res.sendStatus(200);
   }
 };
